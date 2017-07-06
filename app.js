@@ -5,23 +5,19 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
-var WebClient = require('@slack/client').WebClient;
 var sentiment = require('sentiment');
 const request = require('request');
 
-// var SlackWebClient = new WebClient(process.env.SLACK_TOKEN);
-// VERIFICATION TOKEN rT439p7Ez8uV1mYCvNZd4woo
-// OAUTH ACCESS TOKEN xoxp-3360794059-3590295146-208907555538-839c0e6713ac1f8bdab9db56e397594e
-
 
 function postEmotion(emotion, ev) {
+  console.log('emotion in postEmotion', emotion)
+  console.log('ev in postEmotion', ev)
     var message = 'feeling ' + emotion;
     var options = {
         method: 'POST',
         uri: 'https://slack.com/api/chat.postMessage',
         form: {
-            // token: 'xoxb-209912699639-YZZF6CqywK25zIl0B4b545Xo', // Your Slack OAuth token
-            token: 'xoxp-3360794059-3590295146-208907555538-839c0e6713ac1f8bdab9db56e397594e',
+            token: process.env.SLACK_OAUTH_TOKEN,
             channel: ev.channel,
             text: message,
             as_user: false,
@@ -59,13 +55,20 @@ app.use(sassMiddleware({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/slack/message', function(req, res, next) {
+app.post('/bot', function(req, res, next) {
   var q = req.body;
   console.log('Q\n', q)
-    if (q.token !== 'rT439p7Ez8uV1mYCvNZd4woo') {
+
+    // request is coming from slack?
+    if (q.token !== process.env.SLACK_VERIFICATION_TOKEN) {
         res.sendStatus(400);
         return;
     }
+
+    if (req.body.type === 'url_verification') {
+        res.send(q.challenge); // complete bot endpoint handshake for Slack
+    }
+
     // 2. Events - get the message text
     else if (q.type === 'event_callback') {
         if(!q.event.text) return;
@@ -73,6 +76,8 @@ app.post('/slack/message', function(req, res, next) {
         var sent = sentiment(q.event.text) // sentiment analysis
         console.log('sent:\n', sent)
         // postEmotion(sent, q.event) // post message
+
+        res.sendStatus(200)
     }
 });
 
