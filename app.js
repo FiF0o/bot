@@ -109,7 +109,32 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // slack.listen('4000')
 
+app.get('/oauth', function(req, res, next) {
+    res.render('add_to_slack')
+});
 
+app.get('/oauth/redirect', function(req, res) {
+    var options = {
+        uri: 'https://slack.com/api/oauth.access?code='
+        +req.query.code+
+        '&client_id='+process.env.SLACK_CLIENT_ID+
+        '&client_secret='+process.env.SLACK_CLIENT_SECRET+
+        // to redirect back to the original url request - REDIRECT_URL
+        '&redirect_uri='+process.env.REDIRECT_URI,
+        method: 'GET'
+    }
+
+    request(options, function(error, response, body) {
+        var JSONresponse = JSON.parse(body)
+        console.log(JSONresponse)
+        if (!JSONresponse.ok) {
+            res.send("Error encountered: \n"+JSON.stringify(JSONresponse)).status(200).end()
+        }else {
+            // res.send("Success!")
+            res.redirect('/')
+        }
+    })
+});
 
 app.post('/bot', function(req, res, next) {
 
