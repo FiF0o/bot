@@ -83,32 +83,6 @@ app.use(sassMiddleware({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// var ts = require('tinyspeck');
-// var slack = ts.instance({ token: process.env.SLACK_OAUTH_TOKEN });
-/*var instance = slack.instance({
-    unfurl_links: true,
-    channel: 'C1QD223DS1',
-    token: 'xoxb-12345678900-ABCD1234567890'
-})*/
-// console.log('slack', slack)
-
-/*slack.on('message.channels', function(payload){
-    console.log('payload', payload);
-    const message = {
-        text: "I am a test message http://slack.com",
-        attachments: [{
-            text: "And here's an attachment!"
-        }]
-    };
-
-    slack.send('chat.postMessage', message)
-        .then(function(res) {
-            console.log('res', res)
-    })
-})*/
-
-// slack.listen('4000')
-
 app.get('/oauth', function(req, res, next) {
     res.render('add_to_slack')
 });
