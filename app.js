@@ -135,6 +135,7 @@ app.post('/bot', function(req, res, next) {
          *
          */
         // post message which is not from the bot to avoid infinite loop
+        // replace with !q.event.username ...
         if (q.event.username !== BOT_NAME) postEmotion(sent, userPayload)
 
         res.sendStatus(200)

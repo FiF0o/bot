@@ -1,4 +1,19 @@
 # bot
+This project uses the Slack API (Events API) to offer a bot that performs a sentiment analysis.
+OAuth route (`/oauth`) has been implemented to share the app.
+
+
+## Setup
+Instructions tp set up the bot (Slack API) are available in the `./app.js` file.
+Replace `BOT_NAME` with the name of your bot (`req.body.event.username`).
+
+
+## Deploy
+The bot is deployed using Heroku.
+To deploy your own:
+- `heroku create`, `git push heroku master` and `heroku open`
+- don't forget to update your environment variables `.env` and add them to your heroku app (terminal or Settings > Config Variables)
+- change the appropriate `redirect_url`, `url_request` in your Slack app with the ones from your heroku app
 
 
 ## Pi
